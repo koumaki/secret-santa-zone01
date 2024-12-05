@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secret Santa</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        input, button {
+            padding: 10px;
+            font-size: 16px;
+            margin: 10px;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Secret Santa Lookup</h1>
+    <p>Enter your name to find out who you are buying a gift for!</p>
+    <form id="queryForm">
+        <input type="text" id="name" name="name" placeholder="Your Name" required>
+        <button type="submit">Find My Giftee</button>
+    </form>
+    <div id="result"></div>
+
+    <script>
+        const form = document.getElementById('queryForm');
+        const resultDiv = document.getElementById('result');
+
+        form.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            const name = document.getElementById('name').value;
+
+            try {
+                const response = await fetch(`/query?name=${encodeURIComponent(name)}`);
+                if (!response.ok) {
+                    throw new Error(await response.text());
+                }
+                const data = await response.json();
+                resultDiv.innerHTML = `<p>${data.giver}, you need to buy a gift for <strong>${data.giftee}</strong>.</p>`;
+            } catch (error) {
+                resultDiv.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
+            }
+        });
+    </script>
+</body>
+</html>
